@@ -1,0 +1,70 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.2'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.trading'
+version = '0.1.0-SNAPSHOT'
+
+java {
+    toolchain { languageVersion = JavaLanguageVersion.of(21) }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+repositories { mavenCentral() }
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'org.postgresql:postgresql'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+}
+
+tasks.named('test') {
+    description = 'Runs unit tests (excludes @Tag integration)'
+    useJUnitPlatform {
+        excludeTags 'integration'
+    }
+}
+
+tasks.register('integrationTest', Test) {
+    description = 'Runs integration tests (@Tag integration)'
+    group = 'verification'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    useJUnitPlatform {
+        includeTags 'integration'
+    }
+    shouldRunAfter tasks.named('test')
+}
+
+tasks.named('check') {
+    dependsOn tasks.named('integrationTest')
+}
+
+springBoot {
+    mainClass = 'com.trading.paginglist.TradingPagingListApplication'
+}
+
+tasks.named('bootRun') {
+    group = 'application'
+    description = 'Run backend at http://localhost:8091'
+    // 只強制原始碼／檔案 UTF-8；勿設 stdout.encoding=UTF-8。
+    // Windows 終端常為 MS950（CP950），強制 UTF-8 stdout 會讓中文與框線變亂碼。
+    // StartupInfoLogger 會依 ConsoleCharset（native/sun.jnu）輸出。
+    jvmArgs = [
+            '-Dfile.encoding=UTF-8'
+    ]
+}

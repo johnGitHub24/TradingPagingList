@@ -1,0 +1,7 @@
+flowchart TB
+  Q[Query params] --> SVC[ProductService]
+  SVC --> A{filters?}
+  A -->|none| F1[findAll pageable]
+  A -->|name| F2[findByNameContaining]
+  A -->|category| F3[findByCategory]
+  A -->|both| F4[findByNameAndCategory]

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TradingPagingList — CodeGraphic</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root { --bg:#0f1419; --surface:#1a2332; --surface2:#243044; --border:#2d3a4f; --text:#e6edf3; --muted:#8b9cb3; --accent:#3b82f6; --accent2:#10b981; --warn:#f59e0b; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:"Segoe UI","Microsoft JhengHei",sans-serif; background:var(--bg); color:var(--text); line-height:1.6; min-height:100vh; }
+    .top { border-bottom:1px solid var(--border); background:linear-gradient(135deg,#1e3a5f 0%,#0f1419 70%); padding:1.5rem 2rem 0; }
+    .top h1 { font-size:1.5rem; margin-bottom:0.25rem; }
+    .top .sub { color:var(--muted); font-size:0.9rem; margin-bottom:1.25rem; }
+    .top .links a { color:var(--accent); text-decoration:none; margin-right:1rem; }
+    .tabs { display:flex; flex-wrap:wrap; gap:0.35rem; }
+    .tab { appearance:none; border:1px solid var(--border); background:var(--surface); color:var(--muted); padding:0.55rem 1.1rem; border-radius:8px 8px 0 0; cursor:pointer; font-size:0.9rem; border-bottom:none; }
+    .tab.active { background:var(--bg); color:var(--accent2); border-color:var(--accent); box-shadow:inset 0 2px 0 var(--accent); }
+    main { padding:1.5rem 2rem 3rem; max-width:1100px; }
+    .panel { display:none; } .panel.active { display:block; }
+    .panel h2 { font-size:1.2rem; border-bottom:2px solid var(--accent); padding-bottom:0.4rem; margin-bottom:0.75rem; }
+    .blurb { color:#c9d4e3; font-size:0.92rem; margin-bottom:1rem; }
+    .blurb li { margin-left:1.1rem; margin-bottom:0.25rem; }
+    .mermaid { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:1.25rem; overflow-x:auto; }
+    .note { margin-top:1rem; background:var(--surface2); border-left:3px solid var(--warn); padding:0.65rem 0.9rem; font-size:0.85rem; color:var(--muted); }
+    footer { padding:0 2rem 2rem; color:var(--muted); font-size:0.8rem; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1>TradingPagingList — CodeGraphic</h1>
+    <p class="sub">圖為主 · Product CRUD · 伺服器分頁 · Vue 3 表格</p>
+    <p class="links">
+      <a href="md-viewer.html?src=architecture.md">architecture.md</a>
+      <a href="md-viewer.html?src=../README.md">README（權威入口）</a>
+      <a href="swagger.html">API 文件（Swagger）</a>
+    </p>
+    <nav class="tabs">
+      <button type="button" class="tab active" data-tab="pagination">分頁 API</button>
+      <button type="button" class="tab" data-tab="vue">Vue 表格</button>
+      <button type="button" class="tab" data-tab="filter">篩選/排序</button>
+      <button type="button" class="tab" data-tab="stack">全端串接</button>
+    </nav>
+  </header>
+  <main>
+    <section id="panel-pagination" class="panel active">
+      <h2>分頁 API — PageResponse</h2>
+      <ul class="blurb">
+        <li><code>GET /api/v1/products?page&size&sortBy&sortDir</code>。</li>
+        <li>default pageSize=10；max cap 100。</li>
+        <li>Spring <code>Pageable</code> + JpaRepository。</li>
+        <li>回傳 <code>PageResponse</code>：content、totalPages 等。</li>
+      </ul>
+      <div class="mermaid">
+flowchart LR
+  C[Client] --> PC[ProductController]
+  PC --> PS[ProductService]
+  PS --> PR[ProductRepository]
+  PR --> PG[(H2 or PostgreSQL)]
+  PS --> WR[PageResponse JSON]
+      </div>
+      <p class="note">Backend :8091；DataSeeder 插入 50 筆樣本。</p>
+    </section>
+    <section id="panel-vue" class="panel" hidden>
+      <h2>Vue — ProductTable + Pagination</h2>
+      <ul class="blurb">
+        <li><code>ProductTable.vue</code> 表格 + 搜尋。</li>
+        <li><code>Pagination.vue</code> 可重用分頁元件。</li>
+        <li><code>ProductModal.vue</code> 新增／編輯 Modal。</li>
+        <li>dev :5174 Vite proxy → :8091。</li>
+      </ul>
+      <div class="mermaid">
+flowchart TB
+  APP[App.vue] --> PT[ProductTable.vue]
+  PT --> PG[Pagination.vue]
+  PT --> PM[ProductModal.vue]
+  PT --> API[api/products.js axios]
+  API --> BE[:8091 Spring Boot]
+      </div>
+      <p class="note">Bootstrap 5 CDN 樣式。</p>
+    </section>
+    <section id="panel-filter" class="panel" hidden>
+      <h2>篩選/排序 — Repository 分支</h2>
+      <ul class="blurb">
+        <li>可選 <code>name</code>（模糊）、<code>category</code> 篩選。</li>
+        <li>Service 依參數選 derived query 方法。</li>
+        <li>無 SQL 字串拼接；Spring Data 衍生查詢。</li>
+        <li>排序欄位由 <code>sortBy</code> + <code>sortDir</code> 指定。</li>
+      </ul>
+      <div class="mermaid">
+flowchart TB
+  Q[Query params] --> SVC[ProductService]
+  SVC --> A{filters?}
+  A -->|none| F1[findAll pageable]
+  A -->|name| F2[findByNameContaining]
+  A -->|category| F3[findByCategory]
+  A -->|both| F4[findByNameAndCategory]
+      </div>
+      <p class="note">詳見 architecture.md Pagination Flow 表格。</p>
+    </section>
+    <section id="panel-stack" class="panel" hidden>
+      <h2>全端串接 — 分層</h2>
+      <ul class="blurb">
+        <li>Controller 只做 HTTP 轉換，無商業邏輯。</li>
+        <li>Service <code>@Transactional</code> 全部規則。</li>
+        <li>DTO：ProductRequest / ProductResponse / PageResponse。</li>
+        <li>Package：<code>com.trading.paginglist.product</code>。</li>
+      </ul>
+      <div class="mermaid">
+flowchart TB
+  subgraph fe [frontend Vue 3]
+    V[ProductTable]
+  end
+  subgraph be [Spring Boot :8091]
+    C[ProductController]
+    S[ProductService]
+    R[ProductRepository]
+  end
+  V -->|GET page=0 size=10| C --> S --> R
+      </div>
+      <p class="note">prod 可部署 frontend build + 同域 API。</p>
+    </section>
+  </main>
+  <footer>CodeGraphic · 非權威 · 衝突以 README/architecture 為準 · Mermaid CDN</footer>
+  <script>
+    mermaid.initialize({ startOnLoad: false, theme: "dark", securityLevel: "loose" });
+    const panels = { pagination: document.getElementById("panel-pagination"), vue: document.getElementById("panel-vue"), filter: document.getElementById("panel-filter"), stack: document.getElementById("panel-stack") };
+    const rendered = new Set(["pagination"]);
+    async function renderPanel(id) { if (rendered.has(id)) return; await mermaid.run({ nodes: panels[id].querySelectorAll(".mermaid") }); rendered.add(id); }
+    mermaid.run({ nodes: panels.pagination.querySelectorAll(".mermaid") });
+    document.querySelectorAll(".tab").forEach(tab => tab.addEventListener("click", async () => {
+      const id = tab.dataset.tab;
+      document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t === tab));
+      Object.entries(panels).forEach(([k, p]) => { p.classList.toggle("active", k === id); p.hidden = k !== id; });
+      await renderPanel(id);
+    }));
+  </script>
+</body>
+</html>

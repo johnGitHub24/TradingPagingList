@@ -1,0 +1,6 @@
+flowchart LR
+  C[Client] --> PC[ProductController]
+  PC --> PS[ProductService]
+  PS --> PR[ProductRepository]
+  PR --> PG[(H2 or PostgreSQL)]
+  PS --> WR[PageResponse JSON]

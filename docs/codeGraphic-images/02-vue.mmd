@@ -1,0 +1,6 @@
+flowchart TB
+  APP[App.vue] --> PT[ProductTable.vue]
+  PT --> PG[Pagination.vue]
+  PT --> PM[ProductModal.vue]
+  PT --> API[api/products.js axios]
+  API --> BE[:8091 Spring Boot]

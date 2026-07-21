@@ -1,0 +1,10 @@
+flowchart TB
+  subgraph fe [frontend Vue 3]
+    V[ProductTable]
+  end
+  subgraph be [Spring Boot :8091]
+    C[ProductController]
+    S[ProductService]
+    R[ProductRepository]
+  end
+  V -->|GET page=0 size=10| C --> S --> R

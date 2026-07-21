@@ -1,0 +1,13 @@
+{
+  "name": "trading-paging-list-bff",
+  "version": "0.1.0",
+  "description": "Simple Express BFF: serves built Vue assets and proxies /api to Spring Boot",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "http-proxy-middleware": "^2.0.6"
+  }
+}
