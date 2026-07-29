@@ -43,12 +43,12 @@ class StartupInfoLoggerTest {
 
         String out = captureStdout(() -> logger.onApplicationEvent(event));
 
-        assertThat(out).doesNotContain("backend ready");
+        assertThat(out).doesNotContain("後端已啟動");
         assertThat(out).doesNotContain("localhost");
     }
 
     @Test
-    @DisplayName("vite frontend → prints backend + Vue links on :5174 (ASCII-safe)")
+    @DisplayName("vite frontend → prints backend + Vue links on :5174 (UTF-8)")
     void vite_printsFrontendLinks() {
         when(event.getApplicationContext()).thenReturn(applicationContext);
         when(applicationContext.getEnvironment()).thenReturn(env);
@@ -66,15 +66,13 @@ class StartupInfoLoggerTest {
 
         String out = captureStdout(() -> logger.onApplicationEvent(event));
 
-        assertThat(out).contains("TradingPagingList backend ready");
+        assertThat(out).contains("TradingPagingList 後端已啟動");
         assertThat(out).contains("http://localhost:8091/actuator/health");
         assertThat(out).contains("http://localhost:5174/");
-        assertThat(out).contains("[Frontend Vue]");
+        assertThat(out).contains("【前台 Vue】");
         assertThat(out).contains("start-frontend.ps1");
-        assertThat(out).contains("H2 user/pass");
-        // must stay ASCII-readable on any Windows console
-        assertThat(out).doesNotContain("?");
-        assertThat(out).doesNotContain("╔");
+        assertThat(out).contains("H2 Console");
+        assertThat(out).contains("╔");
     }
 
     private static String captureStdout(Runnable action) {

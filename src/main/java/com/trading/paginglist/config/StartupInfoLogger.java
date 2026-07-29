@@ -7,6 +7,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,9 +15,8 @@ import java.util.List;
 
 /**
  * 【職責】應用就緒後於 Console 印出常用 URL（health／Swagger／H2／前台），方便本機啟動。
- * 【技巧】聽 {@link ApplicationReadyEvent}；開關來自 {@code startup.info.*}；
- *         banner 僅用 ASCII（無 Unicode 框線／避免 MS950 把字元換成 {@code ?}），
- *         並以 UTF-8 bytes 寫出；前端需另開 Vite（見 {@code scripts/start-frontend.ps1}）。
+ * 【技巧】聽 {@link ApplicationReadyEvent}；開關來自 {@code startup.info.*}；以 UTF-8 {@link PrintStream} 寫出；
+ *         需 JVM {@code -Dstdout.encoding=UTF-8} 與 IDE Console=UTF-8（端到端 UTF-8 → run-anywhere）。
  * 【概念】開發便利輸出，不是業務邏輯；本專案前端為 Vite（:5174）。
  * 【邊界】不負責啟動前端、不驗證 URL 是否可連。
  */
@@ -24,9 +24,6 @@ import java.util.List;
 public class StartupInfoLogger implements ApplicationListener<ApplicationReadyEvent> {
 
     private static final Logger log = LoggerFactory.getLogger(StartupInfoLogger.class);
-
-    private static final String RULE =
-            "+----------------------------------------------------------------------+";
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
@@ -43,82 +40,60 @@ public class StartupInfoLogger implements ApplicationListener<ApplicationReadyEv
         boolean h2 = env.getProperty("startup.info.h2", Boolean.class, true);
         boolean apiDocs = env.getProperty("startup.info.api-docs", Boolean.class, true);
 
-        List<String> lines = new ArrayList<>();
-        lines.add("");
-        lines.add(RULE);
-        lines.add(pad("|  " + project + " backend ready -- links"));
-        lines.add(RULE);
-        lines.add(pad("|  [Backend API / Tools]"));
-        lines.add(pad("|    Health        " + base + "/actuator/health"));
-        lines.add(pad("|    Info          " + base + "/actuator/info"));
+        PrintStream out = utf8Out();
+        out.println();
+        out.println("╔════════════════════════════════════════════════════════════════════════╗");
+        out.printf("║  %-70s║%n", project + " 後端已啟動 — 使用連結");
+        out.println("╠════════════════════════════════════════════════════════════════════════╣");
+        out.println("║ 【後端 API / 工具】                                                      ║");
+        out.printf("║   健康檢查     %s%n", base + "/actuator/health");
+        out.printf("║   應用資訊     %s%n", base + "/actuator/info");
         if (apiDocs) {
-            lines.add(pad("|    Swagger UI    " + base + "/swagger-ui.html"));
-            lines.add(pad("|    OpenAPI JSON  " + base + "/v3/api-docs"));
+            out.printf("║   Swagger UI   %s%n", base + "/swagger-ui.html");
+            out.printf("║   OpenAPI JSON %s%n", base + "/v3/api-docs");
         }
         if (h2) {
-            lines.add(pad("|    H2 Console    " + base + "/h2-console"));
+            out.printf("║   H2 Console   %s%n", base + "/h2-console");
             String jdbc = env.getProperty("spring.datasource.url", "jdbc:h2:mem:paginglist");
-            lines.add(pad("|    H2 JDBC       " + jdbc));
-            lines.add(pad("|    H2 user/pass  sa / (empty)"));
+            out.printf("║   H2 JDBC URL  %s  帳號 sa  密碼 (空白)%n", jdbc);
         }
 
         if (!"none".equalsIgnoreCase(frontend)) {
-            lines.add(RULE);
+            out.println("╠════════════════════════════════════════════════════════════════════════╣");
             if ("static".equalsIgnoreCase(frontend)) {
-                lines.add(pad("|  [Frontend] same-port static"));
-                lines.add(pad("|    Home          " + base + env.getProperty("startup.info.home-path", "/")));
+                out.println("║ 【前台】同埠靜態資源                                                      ║");
+                out.printf("║   首頁         %s%n", base + env.getProperty("startup.info.home-path", "/"));
                 for (String path : extraPaths(env)) {
-                    lines.add(pad("|    Extra         " + base + path));
+                    out.printf("║   額外         %s%n", base + path);
                 }
             } else if ("vite".equalsIgnoreCase(frontend)) {
                 String feBase = "http://localhost:" + env.getProperty("startup.info.frontend-port", "5174");
-                lines.add(pad("|  [Frontend Vue] start Vite separately (required)"));
-                lines.add(pad("|    Home          " + feBase + env.getProperty("startup.info.home-path", "/")));
-                lines.add(pad("|    How to start  .\\scripts\\start-frontend.ps1"));
-                lines.add(pad("|    Or full stack .\\scripts\\start-all.ps1"));
+                out.println("║ 【前台 Vue】需另執行 Frontend (Vite)                                      ║");
+                out.printf("║   主頁         %s%n", feBase + env.getProperty("startup.info.home-path", "/"));
+                out.println("║   啟動腳本     .\\scripts\\start-frontend.ps1                               ║");
+                out.println("║   或全棧       .\\scripts\\start-all.ps1                                    ║");
                 if (auth) {
-                    lines.add(pad("|    Login         " + feBase + env.getProperty("startup.info.login-path", "/login")));
+                    out.printf("║   登入頁       %s%n", feBase + env.getProperty("startup.info.login-path", "/login"));
                 }
             }
             if (auth) {
-                lines.add(pad("|    Default user  "
-                        + env.getProperty("startup.info.default-user", "admin")
-                        + " / "
-                        + env.getProperty("startup.info.default-pass", "admin123")));
+                out.printf("║   預設帳號     %s / %s%n",
+                        env.getProperty("startup.info.default-user", "admin"),
+                        env.getProperty("startup.info.default-pass", "admin123"));
             }
         }
 
-        lines.add(RULE);
-        lines.add("");
-        printLines(lines);
-        log.info("{} ready — frontend={} | {}", project, frontend, base + "/actuator/health");
-    }
-
-    /** Pads a line to match RULE width (72 chars inside the outer +). */
-    private static String pad(String content) {
-        final int inner = RULE.length() - 1; // up to last '+'
-        if (content.length() >= inner) {
-            return content.substring(0, inner) + "|";
-        }
-        return content + " ".repeat(inner - content.length()) + "|";
+        out.println("╚════════════════════════════════════════════════════════════════════════╝");
+        out.println();
+        log.info("{} ready - frontend={} | {}", project, frontend, base + "/actuator/health");
     }
 
     /**
-     * 【職責】以 UTF-8 寫出 banner（僅 ASCII 內容，任何 Console 皆可讀）。
-     * 【技巧】{@code write(byte[])} 不做二次轉碼；測試替換 {@code System.out} 仍可捕捉。
+     * 【職責】以 UTF-8 寫出 banner（與 JVM stdout.encoding=UTF-8、IDE Console UTF-8 對齊）。
+     * 【技巧】勿依賴系統預設 MS950；端到端 UTF-8 才能 run-anywhere。
      */
-    static void printLines(List<String> lines) {
-        String nl = System.lineSeparator();
-        try {
-            for (String line : lines) {
-                System.out.write((line + nl).getBytes(StandardCharsets.UTF_8));
-            }
-            System.out.flush();
-        } catch (Exception e) {
-            for (String line : lines) {
-                System.out.println(line);
-            }
-        }
+    private static PrintStream utf8Out() {
+        return new PrintStream(System.out, true, StandardCharsets.UTF_8);
     }
 
     private static List<String> extraPaths(Environment env) {
