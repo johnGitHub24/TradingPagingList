@@ -1,4 +1,4 @@
-package com.trading.paginglist.product;
+package com.trading.paginglist.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trading.paginglist.product.domain.ProductCategory;
@@ -19,20 +19,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
- * Integration tests for {@link ProductController}.
- *
- * <p>Runs against a full Spring Boot context with an in-memory H2 database.
- * The DataSeeder populates 50 products on startup, giving predictable
- * pagination totals. Tests are tagged {@code "integration"} so they run
- * only via the {@code integrationTest} Gradle task.</p>
- *
- * <p>Run with: {@code ./gradlew integrationTest}</p>
+ * 【職責】{@link com.trading.paginglist.product.ProductController} 整合層：與單元層同 Case ID（PRODUCT-001～006）。
+ * 【技巧】{@code @SpringBootTest} + MockMvc + H2；DataSeeder 50 筆利於分頁斷言。
+ * 【概念】{@code @Tag("integration")} 只走 {@code integrationTest}；404 與 {@code ProductServiceTest} 成對。
  */
 @Tag("integration")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @org.springframework.test.context.TestPropertySource(properties = "startup.info.enabled=false")
-@DisplayName("ProductController Integration Tests")
+@DisplayName("ProductController Integration Tests (PRODUCT-001～006)")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ProductControllerIntegrationTest {
 
@@ -48,7 +43,7 @@ class ProductControllerIntegrationTest {
 
     @Test
     @Order(1)
-    @DisplayName("GET /api/v1/products — returns HTTP 200 with paginated response")
+    @DisplayName("PRODUCT-003 list/page: GET /api/v1/products — HTTP 200 with paginated response")
     void listProducts_defaultPagination_returns200WithPageResponse() throws Exception {
         mockMvc.perform(get(BASE_URL))
                 .andExpect(status().isOk())
@@ -170,7 +165,7 @@ class ProductControllerIntegrationTest {
 
     @Test
     @Order(10)
-    @DisplayName("POST /api/v1/products — creates product and returns HTTP 201")
+    @DisplayName("PRODUCT-001 create: POST /api/v1/products — HTTP 201")
     void createProduct_validRequest_returns201() throws Exception {
         ProductRequest request = new ProductRequest();
         request.setName("Integration Test Product");
@@ -259,7 +254,7 @@ class ProductControllerIntegrationTest {
 
     @Test
     @Order(20)
-    @DisplayName("GET /api/v1/products/{id} — returns product when it exists")
+    @DisplayName("PRODUCT-002 get: GET /api/v1/products/{id} — HTTP 200 when it exists")
     void getProduct_existingId_returns200() throws Exception {
         // Create a product first to get a valid id
         ProductRequest request = new ProductRequest();
@@ -283,7 +278,7 @@ class ProductControllerIntegrationTest {
 
     @Test
     @Order(21)
-    @DisplayName("GET /api/v1/products/{id} — returns HTTP 404 for non-existent id")
+    @DisplayName("PRODUCT-006 404: GET /api/v1/products/{id} — HTTP 404 for missing id")
     void getProduct_nonExistentId_returns404() throws Exception {
         mockMvc.perform(get(BASE_URL + "/999999"))
                 .andExpect(status().isNotFound())
@@ -294,7 +289,7 @@ class ProductControllerIntegrationTest {
 
     @Test
     @Order(30)
-    @DisplayName("PUT /api/v1/products/{id} — updates and returns HTTP 200")
+    @DisplayName("PRODUCT-004 update: PUT /api/v1/products/{id} — HTTP 200")
     void updateProduct_validRequest_returns200() throws Exception {
         // Create product
         ProductRequest create = new ProductRequest();
@@ -328,7 +323,7 @@ class ProductControllerIntegrationTest {
 
     @Test
     @Order(31)
-    @DisplayName("PUT /api/v1/products/{id} — returns HTTP 404 for non-existent id")
+    @DisplayName("PRODUCT-006 404: PUT /api/v1/products/{id} — HTTP 404 for missing id")
     void updateProduct_nonExistentId_returns404() throws Exception {
         ProductRequest update = new ProductRequest();
         update.setName("Ghost");
@@ -347,7 +342,7 @@ class ProductControllerIntegrationTest {
 
     @Test
     @Order(40)
-    @DisplayName("DELETE /api/v1/products/{id} — deletes product and returns HTTP 204")
+    @DisplayName("PRODUCT-005 delete: DELETE /api/v1/products/{id} — HTTP 204")
     void deleteProduct_existingId_returns204() throws Exception {
         // Create product to delete
         ProductRequest create = new ProductRequest();
@@ -373,7 +368,7 @@ class ProductControllerIntegrationTest {
 
     @Test
     @Order(41)
-    @DisplayName("DELETE /api/v1/products/{id} — returns HTTP 404 for non-existent id")
+    @DisplayName("PRODUCT-006 404: DELETE /api/v1/products/{id} — HTTP 404 for missing id")
     void deleteProduct_nonExistentId_returns404() throws Exception {
         mockMvc.perform(delete(BASE_URL + "/999999"))
                 .andExpect(status().isNotFound());

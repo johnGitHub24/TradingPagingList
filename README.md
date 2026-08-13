@@ -4,11 +4,15 @@ Full-stack CRUD demo with **server-side pagination** — Spring Boot 3 (JPA) bac
 
 ## 文件入口
 
+單一入口：本 README。衝突以主規格為準。
+
 | 文件 | 說明 |
 |------|------|
-| [docs/codeGraphic.html](docs/codeGraphic.html) | Tab 式架構圖（圖為主） |
 | [docs/architecture.md](docs/architecture.md) | 分層與模組 |
-| [CLAUDE.md](CLAUDE.md) | AI／工程薄規則 |
+| [docs/codeGraphic.html](docs/codeGraphic.html) | 架構圖（非權威） |
+| [docs/testing.md](docs/testing.md) | 測試／Case／check |
+| [CLAUDE.md](CLAUDE.md) | AI 薄規則 |
+| [scripts/README.md](scripts/README.md) | 驗證／啟動腳本 |
 
 ## Stack
 
@@ -22,37 +26,18 @@ Full-stack CRUD demo with **server-side pagination** — Spring Boot 3 (JPA) bac
 
 ## Quick Start
 
-本專案是**前後端分離**：後端 `:8091` 與前端 Vite `:5174` 必須**各開一個行程**。  
+本專案是**前後端分離**：後端 `:8091` 與前端 Vite `:5174` 各開一個行程。  
+驗證閘門 **不**需要 npm／Vite（只跑 `check.ps1`）。  
 只啟動後端時，開 `http://localhost:5174/` 會連不上（這是正常的）。
 
-### 一鍵（建議）
-
 ```powershell
-cd D:/ClaudeCode/TradingPagingList
-.\scripts\start-all.ps1
-```
+# 1. 驗證（unit + integration；Gate）
+.\scripts\check.ps1
 
-會開兩個視窗；等 Vite 印出 `Local: http://localhost:5174/` 後，用瀏覽器開：
+# 2. 啟動後端（IntelliJ：Gradle → bootRun；勿對 *Application 綠箭頭）
+.\gradlew.bat bootRun
 
-**http://localhost:5174/**
-
-### 分開啟動
-
-```powershell
-# 視窗 1 — 後端
-.\scripts\bootRun.ps1
-
-# 視窗 2 — 前端（需先有 Node.js；首次會自動 npm install）
-.\scripts\start-frontend.ps1
-```
-
-或手動：
-
-```bash
-# backend
-./gradlew bootRun
-
-# frontend
+# 3. 啟動前端（新終端；需 Node.js；可選 Demo）
 cd frontend
 npm install
 npm run dev
@@ -71,19 +56,6 @@ Useful URLs while running:
 | http://localhost:8091/swagger-ui.html | Interactive API docs |
 | http://localhost:8091/h2-console | H2 database console (dev only) |
 | http://localhost:8091/actuator/health | Health check |
-
-### 2. Start the Frontend (dev mode) — 見上方
-
-若你已用 `start-all.ps1`／`start-frontend.ps1`，可略過本節。
-
-```bash
-cd D:/ClaudeCode/TradingPagingList/frontend
-npm install
-npm run dev
-```
-
-Frontend available at **http://localhost:5174**.  
-Vite proxies all `/api/*` requests to the backend, so no CORS issues.
 
 ---
 
@@ -154,20 +126,25 @@ See [docs/architecture.md](docs/architecture.md) for the full layer diagram.
 
 ## Running Tests
 
+Gate（與 CI 同一入口；含 unit + integration）：
+
+```powershell
+.\scripts\check.ps1
+```
+
+分層（可選）：
+
 ```bash
 # Unit tests (fast, no database)
 ./gradlew test
 
 # Integration tests (full Spring context + H2)
 ./gradlew integrationTest
-
-# Both
-./gradlew test integrationTest
 ```
 
 Reports: `build/reports/tests/`
 
-See [docs/testing.md](docs/testing.md) for details on what each test covers.
+成對 Case：PRODUCT-001～006（見 [docs/testing.md](docs/testing.md)）。
 
 ---
 
@@ -208,9 +185,9 @@ TradingPagingList/
 │       ├── DataSeeder.java
 │       └── OpenApiConfig.java
 ├── src/main/resources/application.yml
-├── src/test/java/com/trading/paginglist/product/
-│   ├── ProductServiceTest.java
-│   └── ProductControllerIntegrationTest.java
+├── src/test/java/com/trading/paginglist/
+│   ├── product/ProductServiceTest.java
+│   └── integration/ProductControllerIntegrationTest.java
 ├── frontend/
 │   ├── index.html
 │   ├── package.json
@@ -233,3 +210,4 @@ TradingPagingList/
 ├── settings.gradle
 └── README.md
 ```
+

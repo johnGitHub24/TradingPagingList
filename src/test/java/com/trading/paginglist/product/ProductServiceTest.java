@@ -26,14 +26,12 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 
 /**
- * Unit tests for {@link ProductService}.
- *
- * <p>Uses Mockito to stub the {@link ProductRepository}, keeping tests
- * fast and free of database dependencies. Each public method is covered
- * by at least one happy-path test and one error-path test.</p>
+ * 【職責】{@link ProductService} 單元層：與整合層同 Case ID（PRODUCT-001～006）。
+ * 【技巧】Mockito stub {@link ProductRepository}，不啟動 Spring／DB。
+ * 【概念】公開行為至少一測；404 與 {@code ProductControllerIntegrationTest} 成對。
  */
 @ExtendWith(MockitoExtension.class)
-@DisplayName("ProductService Unit Tests")
+@DisplayName("ProductService Unit Tests (PRODUCT-001～006)")
 class ProductServiceTest {
 
     @Mock
@@ -64,7 +62,7 @@ class ProductServiceTest {
     class ListProducts {
 
         @Test
-        @DisplayName("returns paginated results when no filters are supplied")
+        @DisplayName("PRODUCT-003 list/page: returns paginated results when no filters are supplied")
         void listProducts_noFilter_returnsPageResponse() {
             // given
             Pageable pageable = PageRequest.of(0, 10, Sort.by("createdAt").descending());
@@ -181,7 +179,7 @@ class ProductServiceTest {
     class GetProduct {
 
         @Test
-        @DisplayName("returns ProductResponse when product exists")
+        @DisplayName("PRODUCT-002 get: returns ProductResponse when product exists")
         void getProduct_existingId_returnsResponse() {
             // given
             given(productRepository.findById(1L)).willReturn(Optional.of(sampleProduct));
@@ -198,7 +196,7 @@ class ProductServiceTest {
         }
 
         @Test
-        @DisplayName("throws ResourceNotFoundException when product does not exist")
+        @DisplayName("PRODUCT-006 404: throws ResourceNotFoundException when product does not exist")
         void getProduct_nonExistentId_throwsResourceNotFoundException() {
             // given
             given(productRepository.findById(999L)).willReturn(Optional.empty());
@@ -217,7 +215,7 @@ class ProductServiceTest {
     class CreateProduct {
 
         @Test
-        @DisplayName("saves and returns the new product with generated id")
+        @DisplayName("PRODUCT-001 create: saves and returns the new product with generated id")
         void createProduct_validRequest_returnsCreatedProduct() {
             // given
             ProductRequest request = new ProductRequest();
@@ -256,7 +254,7 @@ class ProductServiceTest {
     class UpdateProduct {
 
         @Test
-        @DisplayName("updates all mutable fields and returns the updated product")
+        @DisplayName("PRODUCT-004 update: updates all mutable fields and returns the updated product")
         void updateProduct_existingId_returnsUpdatedProduct() {
             // given
             given(productRepository.findById(1L)).willReturn(Optional.of(sampleProduct));
@@ -289,7 +287,7 @@ class ProductServiceTest {
         }
 
         @Test
-        @DisplayName("throws ResourceNotFoundException when product does not exist")
+        @DisplayName("PRODUCT-006 404: throws ResourceNotFoundException when product does not exist")
         void updateProduct_nonExistentId_throwsResourceNotFoundException() {
             // given
             given(productRepository.findById(999L)).willReturn(Optional.empty());
@@ -313,7 +311,7 @@ class ProductServiceTest {
     class DeleteProduct {
 
         @Test
-        @DisplayName("deletes the product when it exists")
+        @DisplayName("PRODUCT-005 delete: deletes the product when it exists")
         void deleteProduct_existingId_deletesSuccessfully() {
             // given
             given(productRepository.findById(1L)).willReturn(Optional.of(sampleProduct));
@@ -326,7 +324,7 @@ class ProductServiceTest {
         }
 
         @Test
-        @DisplayName("throws ResourceNotFoundException when product does not exist")
+        @DisplayName("PRODUCT-006 404: throws ResourceNotFoundException when product does not exist")
         void deleteProduct_nonExistentId_throwsResourceNotFoundException() {
             // given
             given(productRepository.findById(999L)).willReturn(Optional.empty());

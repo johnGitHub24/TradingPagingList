@@ -33,6 +33,7 @@ startup:
     auth: false
     h2: true
     api-docs: true
+    probe: true
     frontend-port: 5174
     home-path: /
 

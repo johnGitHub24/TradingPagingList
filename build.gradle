@@ -61,10 +61,12 @@ springBoot {
 tasks.named('bootRun') {
     group = 'application'
     description = 'Run backend at http://localhost:8091'
-    // 只強制原始碼／檔案 UTF-8；勿設 stdout.encoding=UTF-8。
-    // Windows 終端常為 MS950（CP950），強制 UTF-8 stdout 會讓中文與框線變亂碼。
-    // StartupInfoLogger 會依 ConsoleCharset（native/sun.jnu）輸出。
+    // Run Anywhere：端到端 UTF-8（禁止 MS950 當可攜方案）
     jvmArgs = [
-            '-Dfile.encoding=UTF-8'
+            '-Dfile.encoding=UTF-8',
+            '-Dstdout.encoding=UTF-8',
+            '-Dstderr.encoding=UTF-8',
+            '-Dsun.stdout.encoding=UTF-8',
+            '-Dsun.stderr.encoding=UTF-8'
     ]
 }

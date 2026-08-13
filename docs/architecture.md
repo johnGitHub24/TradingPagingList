@@ -100,3 +100,4 @@ seeding, so restarting the app with a persistent database is safe.
 | 文件 | 用途 |
 |------|------|
 | [codeGraphic.html](codeGraphic.html) | Tab：分頁 API／Vue／篩選／全端（圖為主） |
+| [testing.md](testing.md) | Case ID PRODUCT-001～006；`check.ps1` Gate |
