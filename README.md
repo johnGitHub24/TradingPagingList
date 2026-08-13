@@ -13,7 +13,7 @@ Full-stack CRUD demo with **server-side pagination** — Spring Boot 3 (JPA) bac
 | [docs/testing.md](docs/testing.md) | 測試／Case／check |
 | [CLAUDE.md](CLAUDE.md) | AI 薄規則 |
 | [scripts/README.md](scripts/README.md) | 驗證／啟動腳本 |
-
+| [docs/swagger.html](docs/swagger.html) | **API（Swagger／介面）** |
 ## Stack
 
 | Layer | Technology |
