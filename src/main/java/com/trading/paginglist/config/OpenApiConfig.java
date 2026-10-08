@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
  * OpenAPI 3 / Swagger UI configuration.
  *
  * <p>Provides application-level metadata visible in the Swagger UI
- * at {@code /swagger-ui.html} when the application runs.</p>
+ * <br>at {@code /swagger-ui.html} when the application runs.</p>
  */
 @Configuration
 public class OpenApiConfig {

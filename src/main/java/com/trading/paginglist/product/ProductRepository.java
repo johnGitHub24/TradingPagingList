@@ -10,14 +10,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * Spring Data JPA repository for {@link Product} entities.
  *
  * <p>Extends {@link JpaRepository} to inherit standard CRUD and pagination
- * operations. Custom derived query methods provide name-based search and
- * category filtering, both with pagination support.</p>
+ * <br>operations. Custom derived query methods provide name-based search and
+ * <br>category filtering, both with pagination support.</p>
  */
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
     /**
      * Returns a page of products whose names contain the given string,
-     * performing a case-insensitive match.
+     * <br>performing a case-insensitive match.
      *
      * @param name     the substring to search for in product names
      * @param pageable pagination and sorting instructions

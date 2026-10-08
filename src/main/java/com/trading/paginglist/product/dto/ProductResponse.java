@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  * Outbound DTO for a single product resource.
  *
  * <p>Exposes all fields of {@link Product} in a serialization-friendly
- * form, decoupling the API contract from the JPA entity structure.</p>
+ * <br>form, decoupling the API contract from the JPA entity structure.</p>
  */
 @Data
 @Builder

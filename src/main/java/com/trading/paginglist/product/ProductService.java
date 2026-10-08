@@ -17,9 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
  * Business logic layer for product management.
  *
  * <p>Orchestrates all CRUD operations and pagination queries, keeping
- * the {@link ProductController} free of business rules. All write
- * operations are transactional; read-only operations are annotated with
- * {@code readOnly = true} to avoid acquiring unnecessary write locks.</p>
+ * <br>the {@link ProductController} free of business rules. All write
+ * <br>operations are transactional; read-only operations are annotated with
+ * <br>{@code readOnly = true} to avoid acquiring unnecessary write locks.</p>
  */
 @Slf4j
 @Service
@@ -32,7 +32,7 @@ public class ProductService {
      * Returns a paginated list of products, optionally filtered by name and/or category.
      *
      * <p>Delegates filtering logic to dedicated repository derived queries so no
-     * JPQL string concatenation occurs in this layer.</p>
+     * <br>JPQL string concatenation occurs in this layer.</p>
      *
      * @param name     optional name substring filter (case-insensitive); may be {@code null} or blank
      * @param category optional category filter; may be {@code null}
@@ -101,7 +101,7 @@ public class ProductService {
      * Updates an existing product with the supplied request data.
      *
      * <p>All mutable fields are replaced; the {@code createdAt} timestamp is
-     * never modified.</p>
+     * <br>never modified.</p>
      *
      * @param id      the surrogate key of the product to update
      * @param request validated inbound DTO with updated values
@@ -141,7 +141,7 @@ public class ProductService {
 
     /**
      * Looks up a {@link Product} by id and throws {@link ResourceNotFoundException}
-     * with a descriptive message if the record does not exist.
+     * <br>with a descriptive message if the record does not exist.
      *
      * @param id the surrogate key to look up
      * @return the found {@link Product} entity

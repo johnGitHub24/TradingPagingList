@@ -6,9 +6,9 @@ import java.util.Locale;
 
 /**
  * 【職責】解析 Console 輸出字元集。
- * 【技巧】優先 {@code stdout.encoding}；否則 {@code native.encoding}／預設。
- * 【概念】Run Anywhere 標準是端到端 UTF-8；禁止把 stdout「降級」成 MS950（框線會變 {@code ?}）。
- * 【邊界】StartupInfoLogger 用 UTF-8 PrintStream；本類僅在未設 stdout.encoding 時給其他呼叫端。
+ * <p>【技巧】優先 {@code stdout.encoding}；否則 {@code native.encoding}／預設。
+ * <p>【概念】Run Anywhere 標準是端到端 UTF-8；禁止把 stdout「降級」成 MS950（框線會變 {@code ?}）。
+ * <p>【邊界】StartupInfoLogger 用 UTF-8 PrintStream；本類僅在未設 stdout.encoding 時給其他呼叫端。
  */
 public final class ConsoleCharset {
 

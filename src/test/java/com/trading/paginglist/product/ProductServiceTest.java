@@ -27,8 +27,8 @@ import static org.mockito.BDDMockito.*;
 
 /**
  * 【職責】{@link ProductService} 單元層：與整合層同 Case ID（PRODUCT-001～006）。
- * 【技巧】Mockito stub {@link ProductRepository}，不啟動 Spring／DB。
- * 【概念】公開行為至少一測；404 與 {@code ProductControllerIntegrationTest} 成對。
+ * <p>【技巧】Mockito stub {@link ProductRepository}，不啟動 Spring／DB。
+ * <p>【概念】公開行為至少一測；404 與 {@code ProductControllerIntegrationTest} 成對。
  */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("ProductService Unit Tests (PRODUCT-001～006)")

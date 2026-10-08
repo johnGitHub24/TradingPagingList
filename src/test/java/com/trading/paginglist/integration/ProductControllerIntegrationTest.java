@@ -20,8 +20,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * 【職責】{@link com.trading.paginglist.product.ProductController} 整合層：與單元層同 Case ID（PRODUCT-001～006）。
- * 【技巧】{@code @SpringBootTest} + MockMvc + H2；DataSeeder 50 筆利於分頁斷言。
- * 【概念】{@code @Tag("integration")} 只走 {@code integrationTest}；404 與 {@code ProductServiceTest} 成對。
+ * <p>【技巧】{@code @SpringBootTest} + MockMvc + H2；DataSeeder 50 筆利於分頁斷言。
+ * <p>【概念】{@code @Tag("integration")} 只走 {@code integrationTest}；404 與 {@code ProductServiceTest} 成對。
  */
 @Tag("integration")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

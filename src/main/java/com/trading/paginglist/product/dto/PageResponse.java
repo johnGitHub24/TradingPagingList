@@ -8,8 +8,8 @@ import java.util.List;
  * Generic pagination wrapper returned by all list endpoints.
  *
  * <p>Wraps a Spring Data {@link Page} into a plain serializable record so
- * the API response shape is stable and independent of the Spring Data
- * internal structure.</p>
+ * <br>the API response shape is stable and independent of the Spring Data
+ * <br>internal structure.</p>
  *
  * <p>Example JSON response:</p>
  * <pre>{@code

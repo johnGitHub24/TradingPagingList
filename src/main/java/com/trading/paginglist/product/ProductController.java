@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.*;
  * REST controller exposing product CRUD and pagination endpoints.
  *
  * <p>Responsibilities are limited to HTTP translation: parsing request parameters,
- * delegating to {@link ProductService}, and mapping results to HTTP responses.
- * No business logic lives here.</p>
+ * <br>delegating to {@link ProductService}, and mapping results to HTTP responses.
+ * <br>No business logic lives here.</p>
  *
  * <p>Base path: {@code /api/v1/products}</p>
  */
@@ -41,8 +41,8 @@ public class ProductController {
      * Returns a paginated list of products, optionally filtered by name and/or category.
      *
      * <p>Defaults: page 0, size 10, sorted by {@code createdAt} descending.
-     * The {@code size} parameter is capped at {@value MAX_PAGE_SIZE} to prevent
-     * unbounded queries.</p>
+     * <br>The {@code size} parameter is capped at {@value MAX_PAGE_SIZE} to prevent
+     * <br>unbounded queries.</p>
      *
      * @param name     optional case-insensitive name substring filter
      * @param category optional category enum filter

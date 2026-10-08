@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * 【職責】保護 {@link GlobalExceptionHandler}：靜態資源缺失必須回 404，不可被兜底成 500；
- *         領域 404／驗證 422 也需穩定對應。
+ * <br>領域 404／驗證 422 也需穩定對應。
  */
 @DisplayName("GlobalExceptionHandler Unit Tests")
 class GlobalExceptionHandlerTest {

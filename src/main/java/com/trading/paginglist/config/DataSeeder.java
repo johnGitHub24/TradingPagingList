@@ -16,11 +16,11 @@ import java.util.List;
  * Seeds the database with 50 sample products on application startup.
  *
  * <p>Only runs when the products table is empty, so restarting the application
- * does not duplicate rows when using a persistent database. With the default
- * in-memory H2 setup the table is always empty at startup.</p>
+ * <br>does not duplicate rows when using a persistent database. With the default
+ * <br>in-memory H2 setup the table is always empty at startup.</p>
  *
  * <p>Products span all five {@link ProductCategory} values with varied
- * prices and stock levels to facilitate meaningful pagination testing.</p>
+ * <br>prices and stock levels to facilitate meaningful pagination testing.</p>
  */
 @Slf4j
 @Configuration
